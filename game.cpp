@@ -28,6 +28,7 @@ static Surface* rocket_blue_img = new Surface("assets/Rocket_Blue_Proj2.png");
 static Surface* particle_beam_img = new Surface("assets/Particle_Beam.png");
 static Surface* smoke_img = new Surface("assets/Smoke.png");
 static Surface* explosion_img = new Surface("assets/Explosion.png");
+static Surface* cell_img = new Surface("assets/Particle_Beam.png");
 
 static Sprite tank_red(tank_red_img, 12);
 static Sprite tank_blue(tank_blue_img, 12);
@@ -36,6 +37,7 @@ static Sprite rocket_blue(rocket_blue_img, 12);
 static Sprite smoke(smoke_img, 4);
 static Sprite explosion(explosion_img, 9);
 static Sprite particle_beam_sprite(particle_beam_img, 3);
+static Sprite cell_sprite(cell_img, 10);
 
 const static vec2 tank_size(7, 9);
 const static vec2 rocket_size(6, 6);
@@ -80,6 +82,8 @@ void Game::init()
     particle_beams.push_back(Particle_beam(vec2(590, 327), vec2(100, 50), &particle_beam_sprite, particle_beam_hit_value));
     particle_beams.push_back(Particle_beam(vec2(64, 64), vec2(100, 50), &particle_beam_sprite, particle_beam_hit_value));
     particle_beams.push_back(Particle_beam(vec2(1200, 600), vec2(100, 50), &particle_beam_sprite, particle_beam_hit_value));
+
+    cells.push_back(Cell(vec2(50, 50), vec2(200, 200), &cell_sprite));
 
 
     // Used for testing

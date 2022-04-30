@@ -10,7 +10,13 @@
 
 #define HEALTHBAR_OFFSET 70
 #define SCRWIDTH (1280 + (HEALTHBAR_OFFSET * 2))
+#define SCHRWIDT_WITHOUT_HEALTHBAR 1280
 #define SCRHEIGHT 720
+#define MAX_CELLS 25
+#define CELL_SIZE 36864
+#define CELL_WIDTH 200
+#define CELL_HEIGHT 184,32
+
 
 // #define FULLSCREEN
 // #define ADVANCEDGL	// faster if your system supports it
@@ -90,6 +96,7 @@ using namespace Tmpl8;
 #include "explosion.h"
 #include "particle_beam.h"
 #include "sort_by_tank_health.h"
+#include "cell.h"
 
 #include "game.h"
 

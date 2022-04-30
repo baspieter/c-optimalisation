@@ -17,7 +17,6 @@ class Game
     void update(float deltaTime);
     void draw();
     void tick(float deltaTime);
-    void insertion_sort_tanks_health(const std::vector<Tank>& original, std::vector<const Tank*>& sorted_tanks, int begin, int end);
     void draw_health_bars(vector<Tank> sorted_tanks, const int team);
     void measure_performance();
 
@@ -51,6 +50,7 @@ class Game
     vector<Smoke> smokes;
     vector<Explosion> explosions;
     vector<Particle_beam> particle_beams;
+    vector<Cell> cells;
 
     Terrain background_terrain;
     std::vector<vec2> forcefield_hull;
