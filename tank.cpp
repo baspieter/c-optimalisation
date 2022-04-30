@@ -118,11 +118,6 @@ void Tank::draw(Surface* screen)
     tank_sprite->draw(screen, (int)position.x - 7 + HEALTHBAR_OFFSET, (int)position.y - 9);
 }
 
-int Tank::compare_health(const Tank& other) const
-{
-    return ((health == other.health) ? 0 : ((health > other.health) ? 1 : -1));
-}
-
 //Add some force in a given direction
 void Tank::push(vec2 direction, float magnitude)
 {

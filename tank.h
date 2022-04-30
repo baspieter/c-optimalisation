@@ -31,8 +31,6 @@ class Tank
 
     void draw(Surface* screen);
 
-    int compare_health(const Tank& other) const;
-
     void push(vec2 direction, float magnitude);
 
     vec2 position;
