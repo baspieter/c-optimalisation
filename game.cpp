@@ -37,7 +37,6 @@ static Sprite rocket_blue(rocket_blue_img, 12);
 static Sprite smoke(smoke_img, 4);
 static Sprite explosion(explosion_img, 9);
 static Sprite particle_beam_sprite(particle_beam_img, 3);
-static Sprite cell_sprite(cell_img, 10);
 
 const static vec2 tank_size(7, 9);
 const static vec2 rocket_size(6, 6);
@@ -66,11 +65,40 @@ void Game::init()
 
     float spacing = 7.5f;
 
+    // Initialize grid cells
+    cells.push_back(Cell(1, 1, {}));
+    cells.push_back(Cell(2, 1, {}));
+    cells.push_back(Cell(3, 1, {}));
+
+    cells.push_back(Cell(1, 2, {}));
+    cells.push_back(Cell(2, 2, {}));
+    cells.push_back(Cell(3, 2, {}));
+
+    cells.push_back(Cell(1, 3, {}));
+    cells.push_back(Cell(2, 3, {}));
+    cells.push_back(Cell(3, 3, {}));
+
+    for (int i = 0; i < cells.size(); i++)
+    {
+
+    }
+
+
+
     //Spawn blue tanks
     for (int i = 0; i < num_tanks_blue; i++)
     {
         vec2 position{ start_blue_x + ((i % max_rows) * spacing), start_blue_y + ((i / max_rows) * spacing) };
-        tanks.push_back(Tank(position.x, position.y, BLUE, &tank_blue, &smoke, 1100.f, position.y + 16, tank_radius, tank_max_health, tank_max_speed));
+        Tank tank = Tank(position.x, position.y, BLUE, &tank_blue, &smoke, 1100.f, position.y + 16, tank_radius, tank_max_health, tank_max_speed);
+
+
+        std::vector<Cell>::iterator right_cell;
+        right_cell = std::find_if(cells.begin(), cells.end(), [tank](Cell cell) { return (tank.position.x == cell.column && tank.position.y == cell.row); });
+
+
+        tanks.push_back(tank);
+        right_cell->tanks.push_back(tank);
+        
     }
     //Spawn red tanks
     for (int i = 0; i < num_tanks_red; i++)
@@ -82,8 +110,6 @@ void Game::init()
     particle_beams.push_back(Particle_beam(vec2(590, 327), vec2(100, 50), &particle_beam_sprite, particle_beam_hit_value));
     particle_beams.push_back(Particle_beam(vec2(64, 64), vec2(100, 50), &particle_beam_sprite, particle_beam_hit_value));
     particle_beams.push_back(Particle_beam(vec2(1200, 600), vec2(100, 50), &particle_beam_sprite, particle_beam_hit_value));
-
-    cells.push_back(Cell(vec2(50, 50), vec2(200, 200), &cell_sprite));
 
 
     // Used for testing
@@ -155,6 +181,8 @@ void Game::update(float deltaTime)
             t.set_route(background_terrain.get_route(t, t.target));
         }
     }
+
+
 
     //Check tank collision and nudge tanks away from each other
     for (Tank& tank : tanks)

@@ -2,21 +2,16 @@
 
 namespace Tmpl8
 {
-    class Cell
-    {
+    class Tank; //forward declare
+
+class Cell
+{
     public:
-        Cell();
-        Cell(vec2 min, vec2 max, Sprite* cell_sprite);
+        Cell(int column, int row, vector<Tank>tanks);
+        int column;
+        int row;
+        vector<Tank> tanks = {};
 
-        void draw(Surface* screen);
-
-        vec2 min_position;
-        vec2 max_position;
-
-        Rectangle2D rectangle;
-
-        int sprite_frame;
-
-        Sprite* cell_sprite;
-    };
+        void add_tank(Tank tank);
+};
 } // namespace Tmpl8
