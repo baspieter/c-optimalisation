@@ -65,24 +65,10 @@ void Game::init()
 
     float spacing = 7.5f;
 
-    // Initialize grid cells
-    cells.push_back(Cell(1, 1, {}));
-    cells.push_back(Cell(2, 1, {}));
-    cells.push_back(Cell(3, 1, {}));
-
-    cells.push_back(Cell(1, 2, {}));
-    cells.push_back(Cell(2, 2, {}));
-    cells.push_back(Cell(3, 2, {}));
-
-    cells.push_back(Cell(1, 3, {}));
-    cells.push_back(Cell(2, 3, {}));
-    cells.push_back(Cell(3, 3, {}));
-
     for (int i = 0; i < cells.size(); i++)
     {
 
     }
-
 
 
     //Spawn blue tanks
@@ -90,40 +76,25 @@ void Game::init()
     {
         vec2 position{ start_blue_x + ((i % max_rows) * spacing), start_blue_y + ((i / max_rows) * spacing) };
         Tank tank = Tank(position.x, position.y, BLUE, &tank_blue, &smoke, 1100.f, position.y + 16, tank_radius, tank_max_health, tank_max_speed);
-
-
-        std::vector<Cell>::iterator right_cell;
-        right_cell = std::find_if(cells.begin(), cells.end(), [tank](Cell cell) { return (tank.position.x == cell.column && tank.position.y == cell.row); });
-
-
-        tanks.push_back(tank);
-        right_cell->tanks.push_back(tank);
         
+        tanks.push_back(tank);
+        Cell::add_tank(tank, cells);
     }
+    Cell::check_cells(cells);
     //Spawn red tanks
     for (int i = 0; i < num_tanks_red; i++)
     {
         vec2 position{ start_red_x + ((i % max_rows) * spacing), start_red_y + ((i / max_rows) * spacing) };
-        tanks.push_back(Tank(position.x, position.y, RED, &tank_red, &smoke, 100.f, position.y + 16, tank_radius, tank_max_health, tank_max_speed));
+        Tank tank = Tank(position.x, position.y, RED, &tank_red, &smoke, 100.f, position.y + 16, tank_radius, tank_max_health, tank_max_speed);
+
+        tanks.push_back(tank);
+        Cell::add_tank(tank, cells);
     }
+    Cell::check_cells(cells);
 
     particle_beams.push_back(Particle_beam(vec2(590, 327), vec2(100, 50), &particle_beam_sprite, particle_beam_hit_value));
     particle_beams.push_back(Particle_beam(vec2(64, 64), vec2(100, 50), &particle_beam_sprite, particle_beam_hit_value));
     particle_beams.push_back(Particle_beam(vec2(1200, 600), vec2(100, 50), &particle_beam_sprite, particle_beam_hit_value));
-
-
-    // Used for testing
-  /*  vector<Tank> test_tanks;
-    int i = 3;
-    vec2 position{ start_red_x + ((i % max_rows) * spacing), start_red_y + ((i / max_rows) * spacing) };
-    test_tanks.push_back(Tank(position.x, position.y, RED, &tank_red, &smoke, 100.f, position.y + 16, tank_radius, tank_max_health, tank_max_speed));
-    test_tanks.push_back(Tank(position.x, position.y, RED, &tank_red, &smoke, 100.f, position.y + 16, tank_radius, tank_max_health, tank_max_speed));
-    test_tanks.push_back(Tank(position.x, position.y, RED, &tank_red, &smoke, 100.f, position.y + 16, tank_radius, tank_max_health, tank_max_speed));
-    test_tanks.push_back(Tank(position.x, position.y, RED, &tank_red, &smoke, 100.f, position.y + 16, tank_radius, tank_max_health, tank_max_speed));
-    test_tanks.push_back(Tank(position.x, position.y, RED, &tank_red, &smoke, 100.f, position.y + 16, tank_radius, tank_max_health, tank_max_speed));
-    test_tanks.push_back(Tank(position.x, position.y, RED, &tank_red, &smoke, 100.f, position.y + 16, tank_radius, tank_max_health, tank_max_speed));
-    test_tanks.push_back(Tank(position.x, position.y, RED, &tank_red, &smoke, 100.f, position.y + 16, tank_radius, tank_max_health, tank_max_speed));*/
-
 }
 
 // -----------------------------------------------------------
@@ -358,6 +329,7 @@ void Game::update(float deltaTime)
 // (It is not recommended to multi-thread this function)
 // -----------------------------------------------------------
 void Game::draw()
+
 {
     // clear the graphics window
     screen->clear(0);
@@ -485,6 +457,7 @@ void Tmpl8::Game::measure_performance()
 // -----------------------------------------------------------
 void Game::tick(float deltaTime)
 {
+
     if (!lock_update)
     {
         update(deltaTime);
