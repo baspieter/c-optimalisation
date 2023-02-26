@@ -8,6 +8,7 @@ Tank::Tank(
     float pos_x,
     float pos_y,
     allignments allignment,
+    Cell* cell,
     Sprite* tank_sprite,
     Sprite* smoke_sprite,
     float tar_x,
@@ -27,6 +28,7 @@ Tank::Tank(
       speed(0),
       active(true),
       current_frame(0),
+      cell(cell),
       tank_sprite(tank_sprite),
       smoke_sprite(smoke_sprite)
 {
@@ -82,6 +84,11 @@ void Tank::set_route(const std::vector<vec2>& route)
     {
         target = position;
     }
+}
+
+void Tank::update_cell(Cell* new_cell)
+{
+    cell = new_cell;
 }
 
 //Start reloading timer

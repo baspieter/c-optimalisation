@@ -3,6 +3,7 @@
 namespace Tmpl8
 {
     class Terrain; //forward declare
+    class Cell; //forward declare
 
 enum allignments
 {
@@ -13,7 +14,7 @@ enum allignments
 class Tank
 {
   public:
-    Tank(float pos_x, float pos_y, allignments allignment, Sprite* tank_sprite, Sprite* smoke_sprite, float tar_x, float tar_y, float collision_radius, int health, float max_speed);
+    Tank(float pos_x, float pos_y, allignments allignment, Cell* cell, Sprite* tank_sprite, Sprite* smoke_sprite, float tar_x, float tar_y, float collision_radius, int health, float max_speed);
 
     ~Tank();
 
@@ -25,6 +26,8 @@ class Tank
 
     void set_route(const std::vector<vec2>& route);
     void reload_rocket();
+
+    void update_cell(Cell* cell);
 
     void deactivate();
     bool hit(int hit_value);
@@ -53,6 +56,7 @@ class Tank
     allignments allignment;
 
     int current_frame;
+    Cell* cell;
     Sprite* tank_sprite;
     Sprite* smoke_sprite;
 

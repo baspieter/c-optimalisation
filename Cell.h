@@ -7,12 +7,14 @@ namespace Tmpl8
 class Cell
 {
     public:
-        Cell(int column, int row, vector<Tank>tanks);
-        int column = 0;
-        int row = 0;
-        vector<Tank> tanks = {};
+        Cell(int column, int row, vector<Tank> tanks);
 
-        static void add_tank(Tank tank, vector<Cell> cells);
-        static void check_cells(vector<Cell> cells);
+        ~Cell();
+
+        static void add_tank(Tank* tank, vector<Cell>& cells);
+
+        int row;
+        int column;
+        vector<Tank>tanks;
 };
 } // namespace Tmpl8

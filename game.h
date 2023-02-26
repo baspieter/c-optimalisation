@@ -50,6 +50,7 @@ class Game
     vector<Smoke> smokes;
     vector<Explosion> explosions;
     vector<Particle_beam> particle_beams;
+    Cell default_cell = Cell(0, 0, {});
     vector<Cell> cells;
 
     Terrain background_terrain;
