@@ -120,6 +120,7 @@
   <!-- END Custom section -->
   <ItemGroup>
     <ClCompile Include="Cell.cpp" />
+    <ClCompile Include="check_tank_collision.cpp" />
     <ClCompile Include="explosion.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="particle_beam.cpp" />
@@ -135,6 +136,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cell.h" />
+    <ClInclude Include="check_tank_collision.h" />
     <ClInclude Include="explosion.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="particle_beam.h" />

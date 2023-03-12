@@ -1,7 +1,7 @@
 #include "precomp.h" // include (only) this in every .cpp file
 
-constexpr auto num_tanks_blue = 2048;
-constexpr auto num_tanks_red = 2048;
+constexpr auto num_tanks_blue = 1; //2048;
+constexpr auto num_tanks_red = 0; //2048;
 
 constexpr auto tank_max_health = 1000;
 constexpr auto rocket_hit_value = 60;
@@ -54,7 +54,6 @@ void Game::init()
     frame_count_font = new Font("assets/digital_small.png", "ABCDEFGHIJKLMNOPQRSTUVWXYZ:?!=-0123456789.");
 
     tanks.reserve(num_tanks_blue + num_tanks_red);
-    cells.push_back(default_cell);
 
     uint max_rows = 24;
 
@@ -66,25 +65,29 @@ void Game::init()
 
     float spacing = 7.5f;
 
+
     //Spawn blue tanks
     for (int i = 0; i < num_tanks_blue; i++)
     {
         vec2 position{ start_blue_x + ((i % max_rows) * spacing), start_blue_y + ((i / max_rows) * spacing) };
-        Tank tank = Tank(position.x, position.y, BLUE, &default_cell, &tank_blue, &smoke, 1100.f, position.y + 16, tank_radius, tank_max_health, tank_max_speed);
-        
+        Cell* tank_cell = Cell::find_cell_for_tank(position.x, position.y, cells);
+        Tank tank = Tank(position.x, position.y, BLUE, tank_cell, &tank_blue, &smoke, 1100.f, position.y + 16, tank_radius, tank_max_health, tank_max_speed);
+        tank_cell->tanks.push_back(&tank);
         tanks.push_back(tank);
-        Cell::add_tank(&tank, cells);
     }
 
     //Spawn red tanks
     for (int i = 0; i < num_tanks_red; i++)
     {
         vec2 position{ start_red_x + ((i % max_rows) * spacing), start_red_y + ((i / max_rows) * spacing) };
-        Tank tank = Tank(position.x, position.y, RED, &default_cell, &tank_red, &smoke, 100.f, position.y + 16, tank_radius, tank_max_health, tank_max_speed);
-
+        Cell* tank_cell = Cell::find_cell_for_tank(position.x, position.y, cells);
+        Tank tank = Tank(position.x, position.y, RED, tank_cell, &tank_red, &smoke, 100.f, position.y + 16, tank_radius, tank_max_health, tank_max_speed);
         tanks.push_back(tank);
-        Cell::add_tank(&tank, cells);
+        tank_cell->tanks.push_back(&tank);
     }
+
+
+    //check_tank_collision(tanks);
 
     particle_beams.push_back(Particle_beam(vec2(590, 327), vec2(100, 50), &particle_beam_sprite, particle_beam_hit_value));
     particle_beams.push_back(Particle_beam(vec2(64, 64), vec2(100, 50), &particle_beam_sprite, particle_beam_hit_value));
@@ -147,31 +150,6 @@ void Game::update(float deltaTime)
         }
     }
 
-
-
-    //Check tank collision and nudge tanks away from each other
-    for (Tank& tank : tanks)
-    {
-        if (tank.active)
-        {
-            for (Tank& other_tank : tanks)
-            {
-                if (&tank == &other_tank || !other_tank.active) continue;
-
-                vec2 dir = tank.get_position() - other_tank.get_position();
-                float dir_squared_len = dir.sqr_length();
-
-                float col_squared_len = (tank.get_collision_radius() + other_tank.get_collision_radius());
-                col_squared_len *= col_squared_len;
-
-                if (dir_squared_len < col_squared_len)
-                {
-                    tank.push(dir.normalized(), 1.f);
-                }
-            }
-        }
-    }
-
     //Update tanks
     for (Tank& tank : tanks)
     {
@@ -179,6 +157,7 @@ void Game::update(float deltaTime)
         {
             //Move tanks according to speed and nudges (see above) also reload
             tank.tick(background_terrain);
+            tank.check_or_update_cell(cells);
 
             //Shoot at closest target if reloaded
             if (tank.rocket_reloaded())

@@ -27,7 +27,7 @@ class Tank
     void set_route(const std::vector<vec2>& route);
     void reload_rocket();
 
-    void update_cell(Cell* cell);
+    void check_or_update_cell(vector<Cell>& cells);
 
     void deactivate();
     bool hit(int hit_value);

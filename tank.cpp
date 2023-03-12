@@ -86,9 +86,17 @@ void Tank::set_route(const std::vector<vec2>& route)
     }
 }
 
-void Tank::update_cell(Cell* new_cell)
+void Tank::check_or_update_cell(vector<Cell>& cells)
 {
-    cell = new_cell;
+    int tank_col = position.x / CELL_WIDTH;
+    int tank_row = position.y / CELL_HEIGHT;
+
+    if (tank_col != cell->column || tank_row != cell->row)
+    {
+        Cell* new_cell = Cell::find_cell_for_tank(position.x, position.y, cells);
+        cout << "Old cell: " << cell->column << cell->row;
+        cout << " New cell: " << new_cell->column << new_cell->row << endl;
+    }
 }
 
 //Start reloading timer
