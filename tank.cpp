@@ -94,8 +94,7 @@ void Tank::check_or_update_cell(vector<Cell>& cells)
     if (tank_col != cell->column || tank_row != cell->row)
     {
         Cell* new_cell = Cell::find_cell_for_tank(position.x, position.y, cells);
-        cout << "Old cell: " << cell->column << cell->row;
-        cout << " New cell: " << new_cell->column << new_cell->row << endl;
+        cell = new_cell;
     }
 }
 

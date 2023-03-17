@@ -12,6 +12,7 @@ class Cell
         ~Cell();
 
         static Cell* find_cell_for_tank(int pos_x, int pos_y, vector<Cell>& cells);
+        void update_cell_for_tank(Tank tank, vector<Cell>& cells);
 
         int row;
         int column;

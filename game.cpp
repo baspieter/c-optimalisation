@@ -1,7 +1,7 @@
 #include "precomp.h" // include (only) this in every .cpp file
 
-constexpr auto num_tanks_blue = 1; //2048;
-constexpr auto num_tanks_red = 0; //2048;
+constexpr auto num_tanks_blue = 2048; //2048;
+constexpr auto num_tanks_red = 2048; //2048;
 
 constexpr auto tank_max_health = 1000;
 constexpr auto rocket_hit_value = 60;
@@ -71,9 +71,10 @@ void Game::init()
     {
         vec2 position{ start_blue_x + ((i % max_rows) * spacing), start_blue_y + ((i / max_rows) * spacing) };
         Cell* tank_cell = Cell::find_cell_for_tank(position.x, position.y, cells);
-        Tank tank = Tank(position.x, position.y, BLUE, tank_cell, &tank_blue, &smoke, 1100.f, position.y + 16, tank_radius, tank_max_health, tank_max_speed);
-        tank_cell->tanks.push_back(&tank);
+        Tank& tank = Tank(position.x, position.y, BLUE, tank_cell, &tank_blue, &smoke, 1100.f, position.y + 16, tank_radius, tank_max_health, tank_max_speed);
         tanks.push_back(tank);
+
+        tank_cell->tanks.push_back(&tanks.at(i));
     }
 
     //Spawn red tanks
@@ -83,11 +84,9 @@ void Game::init()
         Cell* tank_cell = Cell::find_cell_for_tank(position.x, position.y, cells);
         Tank tank = Tank(position.x, position.y, RED, tank_cell, &tank_red, &smoke, 100.f, position.y + 16, tank_radius, tank_max_health, tank_max_speed);
         tanks.push_back(tank);
-        tank_cell->tanks.push_back(&tank);
+        tank_cell->tanks.push_back(&tanks.at(num_tanks_blue + i));
     }
 
-
-    //check_tank_collision(tanks);
 
     particle_beams.push_back(Particle_beam(vec2(590, 327), vec2(100, 50), &particle_beam_sprite, particle_beam_hit_value));
     particle_beams.push_back(Particle_beam(vec2(64, 64), vec2(100, 50), &particle_beam_sprite, particle_beam_hit_value));
@@ -140,6 +139,7 @@ bool Tmpl8::Game::left_of_line(vec2 line_start, vec2 line_end, vec2 point)
 // -----------------------------------------------------------
 void Game::update(float deltaTime)
 {
+
     //Calculate the route to the destination for each tank using BFS
     //Initializing routes here so it gets counted for performance..
     if (frame_count == 0)
@@ -149,6 +149,9 @@ void Game::update(float deltaTime)
             t.set_route(background_terrain.get_route(t, t.target));
         }
     }
+
+    //Check tank collision and nudge tanks away from each other
+    check_tank_collision(tanks, cells);
 
     //Update tanks
     for (Tank& tank : tanks)
@@ -357,7 +360,8 @@ void Game::draw()
 
         vector<Tank> sorted_tanks = tanks;
         Quicksort(sorted_tanks, 0, sorted_tanks.size() - 1);
-        sorted_tanks.erase(std::remove_if(sorted_tanks.begin(), sorted_tanks.end(), [](Tank tank) { return !tank.active; }), sorted_tanks.end());
+        // Todo: Regel hieronder verwijderd inactieve tanks, maakt dat de health bar niet kapot?
+        //sorted_tanks.erase(std::remove_if(sorted_tanks.begin(), sorted_tanks.end(), [](Tank tank) { return !tank.active; }), sorted_tanks.end());
         draw_health_bars(sorted_tanks, t);
     }
 }

@@ -29,4 +29,7 @@ namespace Tmpl8
         return &cells.back();
     }
 
+    // Update tank cells when tanks move.
+    void update_cell_for_tank(Tank tank, vector<Cell>& cells);
+
 } // namespace Tmpl8
