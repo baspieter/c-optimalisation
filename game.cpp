@@ -16,6 +16,7 @@ constexpr auto max_frames = 2000;
 //Global performance timer
 // Start: 114757
 // 30-04-2022 ( quick sort ): 446281 > 7.27min > speedup 1.0
+// 19-03-2023 ( grid collision ): 321526 > 5.21min > speedup 1.4
 constexpr auto REF_PERFORMANCE = 446281; //UPDATE THIS WITH YOUR REFERENCE PERFORMANCE (see console after 2k frames)
 static timer perf_timer;
 static float duration;
@@ -49,6 +50,12 @@ const static float rocket_radius = 5.f;
 // This function does not count for the performance multiplier
 // (Feel free to optimize anyway though ;) )
 // -----------------------------------------------------------
+
+bool isEven(Tank k, vector<Tank> tanks) {
+    return &k == &tanks.at(0);
+}
+
+
 void Game::init()
 {
     frame_count_font = new Font("assets/digital_small.png", "ABCDEFGHIJKLMNOPQRSTUVWXYZ:?!=-0123456789.");
@@ -69,24 +76,24 @@ void Game::init()
     //Spawn blue tanks
     for (int i = 0; i < num_tanks_blue; i++)
     {
+        int tank_index = i;
         vec2 position{ start_blue_x + ((i % max_rows) * spacing), start_blue_y + ((i / max_rows) * spacing) };
         Cell* tank_cell = Cell::find_cell_for_tank(position.x, position.y, cells);
-        Tank& tank = Tank(position.x, position.y, BLUE, tank_cell, &tank_blue, &smoke, 1100.f, position.y + 16, tank_radius, tank_max_health, tank_max_speed);
+        Tank tank = Tank(tank_index, position.x, position.y, BLUE, tank_cell->index, &tank_blue, &smoke, 1100.f, position.y + 16, tank_radius, tank_max_health, tank_max_speed);
         tanks.push_back(tank);
-
-        tank_cell->tanks.push_back(&tanks.at(i));
+        tank_cell->tank_indices.push_back(tank_index);
     }
 
     //Spawn red tanks
     for (int i = 0; i < num_tanks_red; i++)
     {
+        int tank_index = num_tanks_blue + i;
         vec2 position{ start_red_x + ((i % max_rows) * spacing), start_red_y + ((i / max_rows) * spacing) };
         Cell* tank_cell = Cell::find_cell_for_tank(position.x, position.y, cells);
-        Tank tank = Tank(position.x, position.y, RED, tank_cell, &tank_red, &smoke, 100.f, position.y + 16, tank_radius, tank_max_health, tank_max_speed);
+        Tank tank = Tank(tank_index, position.x, position.y, RED, tank_cell->index, &tank_red, &smoke, 100.f, position.y + 16, tank_radius, tank_max_health, tank_max_speed);
         tanks.push_back(tank);
-        tank_cell->tanks.push_back(&tanks.at(num_tanks_blue + i));
+        tank_cell->tank_indices.push_back(tank_index);
     }
-
 
     particle_beams.push_back(Particle_beam(vec2(590, 327), vec2(100, 50), &particle_beam_sprite, particle_beam_hit_value));
     particle_beams.push_back(Particle_beam(vec2(64, 64), vec2(100, 50), &particle_beam_sprite, particle_beam_hit_value));
@@ -150,8 +157,8 @@ void Game::update(float deltaTime)
         }
     }
 
-    //Check tank collision and nudge tanks away from each other
-    check_tank_collision(tanks, cells);
+    
+    
 
     //Update tanks
     for (Tank& tank : tanks)
@@ -160,7 +167,12 @@ void Game::update(float deltaTime)
         {
             //Move tanks according to speed and nudges (see above) also reload
             tank.tick(background_terrain);
-            tank.check_or_update_cell(cells);
+
+            // Check if tank is still in the right cell. If not, update it.
+            Cell::check_or_update_cell(tank, cells, tanks);
+
+            //// Check if tank collided with tanks in surrounding cells, if so, nudge away.
+            check_tank_collision(tank, tanks, cells);
 
             //Shoot at closest target if reloaded
             if (tank.rocket_reloaded())

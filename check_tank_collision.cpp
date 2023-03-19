@@ -1,29 +1,24 @@
 #include "precomp.h" // include (only) this in every .cpp file
 
-void check_tank_collision(vector<Tank>& tanks, vector<Cell>& cells) {
-    for (Tank& current_tank : tanks)
+void check_tank_collision(Tank& current_tank, vector<Tank>& tanks, vector<Cell>& cells) {
+    vector<Cell> surrounding_cells = find_surrounding_cells(current_tank, cells);
+
+    for (Cell& cell : surrounding_cells)
     {
-        if (!current_tank.active) continue;
-
-        vector<Cell> surrounding_cells = find_surrounding_cells(current_tank, cells);
-
-        for (Cell cell : surrounding_cells)
+        for (int tank_index : cell.tank_indices)
         {
-            for (Tank* tank : cell.tanks)
+            Tank& tank = tanks.at(tank_index);
+            if (!tank.active || &current_tank == &tank) continue;
+
+            vec2 dir = current_tank.get_position() - tank.get_position();
+            float dir_squared_len = dir.sqr_length();
+
+            float col_squared_len = (current_tank.get_collision_radius() + tank.get_collision_radius());
+            col_squared_len *= col_squared_len;
+
+            if (dir_squared_len < col_squared_len)
             {
-                if (!tank->active || &current_tank == tank) continue;
-
-
-                vec2 dir = current_tank.get_position() - tank->get_position();
-                float dir_squared_len = dir.sqr_length();
-
-                float col_squared_len = (current_tank.get_collision_radius() + tank->get_collision_radius());
-                col_squared_len *= col_squared_len;
-
-                if (dir_squared_len < col_squared_len)
-                {
-                    current_tank.push(dir.normalized(), 1.f);
-                }
+                current_tank.push(dir.normalized(), 1.f);
             }
         }
     }
@@ -32,10 +27,11 @@ void check_tank_collision(vector<Tank>& tanks, vector<Cell>& cells) {
 vector<Cell> find_surrounding_cells(Tank tank, vector<Cell> &cells)
 {
     vector<Cell> surrounding_cells;
+    Cell& tank_cell = cells.at(tank.cell_index);
 
     // Tank original position.
-    int tank_col_or = tank.cell->column;
-    int tank_row_or = tank.cell->row;
+    int tank_col_or = tank_cell.column;
+    int tank_row_or = tank_cell.row;
 
     // Tank most left top cell.
     int tank_col = tank_col_or - 1;
@@ -60,30 +56,3 @@ vector<Cell> find_surrounding_cells(Tank tank, vector<Cell> &cells)
 
     return surrounding_cells;
 }
-
-
-
-// Original code
-//
-//for (Tank& tank : tanks)
-//{
-//    if (tank.active)
-//    {
-//
-//        for (Tank& other_tank : tanks)
-//        {
-//            if (&tank == &other_tank || !other_tank.active) continue;
-//
-//            vec2 dir = tank.get_position() - other_tank.get_position();
-//            float dir_squared_len = dir.sqr_length();
-//
-//            float col_squared_len = (tank.get_collision_radius() + other_tank.get_collision_radius());
-//            col_squared_len *= col_squared_len;
-//
-//            if (dir_squared_len < col_squared_len)
-//            {
-//                tank.push(dir.normalized(), 1.f);
-//            }
-//        }
-//    }
-//}

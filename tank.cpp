@@ -5,10 +5,11 @@
 namespace Tmpl8
 {
 Tank::Tank(
+    int index,
     float pos_x,
     float pos_y,
     allignments allignment,
-    Cell* cell,
+    int cell_index,
     Sprite* tank_sprite,
     Sprite* smoke_sprite,
     float tar_x,
@@ -16,7 +17,8 @@ Tank::Tank(
     float collision_radius,
     int health,
     float max_speed)
-    : position(pos_x, pos_y),
+    : index(index),
+      position(pos_x, pos_y),
       allignment(allignment),
       target(tar_x, tar_y),
       health(health),
@@ -28,7 +30,7 @@ Tank::Tank(
       speed(0),
       active(true),
       current_frame(0),
-      cell(cell),
+      cell_index(cell_index),
       tank_sprite(tank_sprite),
       smoke_sprite(smoke_sprite)
 {
@@ -83,18 +85,6 @@ void Tank::set_route(const std::vector<vec2>& route)
     else
     {
         target = position;
-    }
-}
-
-void Tank::check_or_update_cell(vector<Cell>& cells)
-{
-    int tank_col = position.x / CELL_WIDTH;
-    int tank_row = position.y / CELL_HEIGHT;
-
-    if (tank_col != cell->column || tank_row != cell->row)
-    {
-        Cell* new_cell = Cell::find_cell_for_tank(position.x, position.y, cells);
-        cell = new_cell;
     }
 }
 

@@ -14,7 +14,7 @@ enum allignments
 class Tank
 {
   public:
-    Tank(float pos_x, float pos_y, allignments allignment, Cell* cell, Sprite* tank_sprite, Sprite* smoke_sprite, float tar_x, float tar_y, float collision_radius, int health, float max_speed);
+    Tank(int index, float pos_x, float pos_y, allignments allignment, int cell_index, Sprite* tank_sprite, Sprite* smoke_sprite, float tar_x, float tar_y, float collision_radius, int health, float max_speed);
 
     ~Tank();
 
@@ -26,8 +26,6 @@ class Tank
 
     void set_route(const std::vector<vec2>& route);
     void reload_rocket();
-
-    void check_or_update_cell(vector<Cell>& cells);
 
     void deactivate();
     bool hit(int hit_value);
@@ -53,10 +51,12 @@ class Tank
     bool reloaded;
     bool active;
 
+    int index;
+
     allignments allignment;
 
     int current_frame;
-    Cell* cell;
+    int cell_index;
     Sprite* tank_sprite;
     Sprite* smoke_sprite;
 
